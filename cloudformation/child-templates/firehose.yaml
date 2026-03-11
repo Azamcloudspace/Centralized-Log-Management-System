@@ -39,6 +39,8 @@ Resources:
                 Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
               - Effect: Allow
                 Action:
+                  - "s3:ListBucket"
+                  - "s3:GetBucketLocation"
                   - "s3:PutObject"
                   - "s3:PutObjectAcl"
                 Resource: !Sub "${LogsBackupBucket.Arn}/*"
@@ -74,6 +76,7 @@ Outputs:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
 
 
 
