@@ -33,7 +33,7 @@ Resources:
             Action:
               - logs:CreateLogStream
               - logs:PutLogEvents
-            Resource: !Sub "{LogGroupArn}/*"
+            Resource: !Sub "${LogGroupArn}/*"
               Parameters:
                 LogGroupArn: !GetAtt OpenSearchLogGroup.Arn
 
@@ -50,7 +50,7 @@ Resources:
             Action:
               - logs:CreateLogStream
               - logs:PutLogEvents
-            Resource: !Sub "{LogGroupArn}/*"
+            Resource: !Sub "${LogGroupArn}/*"
               Parameters:
                 LogGroupArn: !GetAtt FirehoseLogGroup.Arn
 
@@ -70,5 +70,6 @@ Outputs:
     Value: !Ref ApplicationLogGroup
   ApplicationLogGroupArn:
     Value: !GetAtt ApplicationLogGroup.Arn
+
 
 
