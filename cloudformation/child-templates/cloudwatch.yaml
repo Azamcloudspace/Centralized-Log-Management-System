@@ -33,7 +33,9 @@ Resources:
             Action:
               - logs:CreateLogStream
               - logs:PutLogEvents
-            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:open-search-logs:*"
+            Resource: !Sub "{LogGroupArn}/*"
+              Parameters:
+                LogGroupArn: !GetAtt OpenSearchLogGroup.Arn
 
   FirehoseLogGroupPolicy:
     Type: AWS::Logs::ResourcePolicy
@@ -48,7 +50,10 @@ Resources:
             Action:
               - logs:CreateLogStream
               - logs:PutLogEvents
-            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:firehose-logs:*"
+            Resource: !Sub "{LogGroupArn}/*"
+              Parameters:
+                LogGroupArn: !GetAtt FirehoseLogGroup.Arn
+
 
 Outputs:
   FirehoseLogGroupName:
@@ -65,4 +70,5 @@ Outputs:
     Value: !Ref ApplicationLogGroup
   ApplicationLogGroupArn:
     Value: !GetAtt ApplicationLogGroup.Arn
+
 
