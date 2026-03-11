@@ -36,14 +36,18 @@ Resources:
                   - "es:ESHttpPost"
                   - "es:ESHttpPut"
                   - "es:DescribeElasticsearchDomain"
-                Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+                Resource: 
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
               - Effect: Allow
                 Action:
                   - "s3:ListBucket"
                   - "s3:GetBucketLocation"
                   - "s3:PutObject"
                   - "s3:PutObjectAcl"
-                Resource: !Sub "${LogsBackupBucket.Arn}/*"
+                Resource: 
+                  - !GetAtt LogsBackupBucket.Arn
+                  - !Sub "${LogsBackupBucket.Arn}/*"
                 
               - Effect: Allow
                 Action:
@@ -76,6 +80,7 @@ Outputs:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
 
 
 
