@@ -3,6 +3,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Resources:
   
   EC2Stack:
+    DependsOn:
+      - SsmStack
+      - CloudWatchStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/ec2.yaml
@@ -22,7 +25,7 @@ Resources:
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/opensearch.yaml
       Parameters:
-        OpenSearcLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
+        OpenSearchLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
 
   FirehoseStack:
     Type: AWS::CloudFormation::Stack
@@ -40,5 +43,6 @@ Resources:
         FirehoseDeliveryStream: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
         ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
     
+
 
 
