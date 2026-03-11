@@ -1,7 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-
 Resources:
-
   FirehoseLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -19,57 +17,67 @@ Resources:
     Properties:
       LogGroupName: application-logs
       RetentionInDays: 7
-      
+
   OpenSearchLogGroupPolicy:
     Type: AWS::Logs::ResourcePolicy
     Properties:
       PolicyName: OpenSearchLogGroupPolicy
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: es.amazonaws.com
-            Action:
-              - logs:CreateLogStream
-              - logs:PutLogEvents
-            Resource: 
-              - !GetAtt OpenSearchLogGroup.Arn
-              - !Sub "${OpenSearchLogGroup.Arn}/*"
-  
+      PolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "es.amazonaws.com"
+              },
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "${OpenSearchLogGroup.Arn}",
+                "${OpenSearchLogGroup.Arn}:*"
+              ]
+            }
+          ]
+        }
+
   FirehoseLogGroupPolicy:
     Type: AWS::Logs::ResourcePolicy
     Properties:
       PolicyName: FirehoseLogGroupPolicy
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: firehose.amazonaws.com
-            Action:
-              - logs:CreateLogStream
-              - logs:PutLogEvents
-            Resource:
-              - !GetAtt FirehoseLogGroup.Arn
-              - !Sub "${FirehoseLogGroup.Arn}/*"
-              
+      PolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "firehose.amazonaws.com"
+              },
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "${FirehoseLogGroup.Arn}",
+                "${FirehoseLogGroup.Arn}:*"
+              ]
+            }
+          ]
+        }
+
 Outputs:
   FirehoseLogGroupName:
     Value: !Ref FirehoseLogGroup
   FirehoseLogGroupArn:
     Value: !GetAtt FirehoseLogGroup.Arn
-
   OpenSearchLogGroupName:
     Value: !Ref OpenSearchLogGroup
   OpenSearchLogGroupArn:
     Value: !GetAtt OpenSearchLogGroup.Arn
-
   ApplicationLogGroupName:
     Value: !Ref ApplicationLogGroup
   ApplicationLogGroupArn:
     Value: !GetAtt ApplicationLogGroup.Arn
-
-
-
-
