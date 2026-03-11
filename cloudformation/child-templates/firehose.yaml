@@ -6,6 +6,9 @@ Parameters:
   FirehoseLogGroup:
     Type: String
 
+  FirehoseLogStream:
+    Type: String
+    
 Resources:
   LogsBackupBucket:
     Type: AWS::S3::Bucket
@@ -61,6 +64,7 @@ Resources:
         CloudWatchLoggingOptions:
           Enabled: true
           LogGroupName: !Ref FirehoseLogGroup
+          LogStreamName: !Ref FirehoseLogStream
         BufferingHints:
           IntervalInSeconds: 300
           SizeInMBs: 5
@@ -70,6 +74,7 @@ Outputs:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
 
 
 
