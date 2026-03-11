@@ -60,6 +60,8 @@ Outputs:
     Value: !Ref FirehoseLogGroup
   FirehoseLogGroupArn:
     Value: !GetAtt FirehoseLogGroup.Arn
+  FirehoseLogStreamName:
+    Value: !Ref FirehoseLogStream
   OpenSearchLogGroupName:
     Value: !Ref OpenSearchLogGroup
   OpenSearchLogGroupArn:
@@ -68,4 +70,5 @@ Outputs:
     Value: !Ref ApplicationLogGroup
   ApplicationLogGroupArn:
     Value: !GetAtt ApplicationLogGroup.Arn
+
 
