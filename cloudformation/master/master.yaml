@@ -34,6 +34,7 @@ Resources:
       Parameters:
         OpenSearchDomain: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainName
         FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
+        FirehoseLogStream: !GetAtt CloudWatchStack.Outputs.FirehoseLogStreamName
 
   CwTOFireStack:
     Type: AWS::CloudFormation::Stack
@@ -43,6 +44,7 @@ Resources:
         FirehoseDeliveryStream: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
         ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
     
+
 
 
 
