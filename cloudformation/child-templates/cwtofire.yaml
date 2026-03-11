@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  FirehoseDeliveryStream:
+    Type: String
+    
+  ApplicationLogGroup:
+    Type: String
+
+Resources:
+
+  CloudWatchToFirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CloudWatchToFirehoseRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: logs.amazonaws.com
+            Action: sts:AssumeRole
+
+      Policies:
+        - PolicyName: FirehoseWritePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                Resource: !Ref FirehoseDeliveryStream
+
+  LogSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      LogGroupName: !Ref ApplicationLogGroup
+      FilterPattern: ""
+      DestinationArn: !Ref FirehoseDeliveryStream
+      RoleArn: !GetAtt CloudWatchToFirehoseRole.Arn

@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  OpenSearchLogGroup:
+    Type: String
+
+Resources:
+
+  OpenSearchDomain:
+    Type: AWS::OpenSearchService::Domain
+    Properties:
+
+      DomainName: logs-domain
+
+      EngineVersion: OpenSearch_2.11
+
+      ClusterConfig:
+        InstanceType: t3.small.search
+        InstanceCount: 1
+
+      LogPublishingOptions:
+        INDEX_SLOW_LOGS:
+          CloudWatchLogsLogGroupArn: !Ref OpenSearchLogGroup
+          Enabled: true
+
+      EBSOptions:
+        EBSEnabled: true
+        VolumeSize: 10
+
+      NodeToNodeEncryptionOptions:
+        Enabled: true
+
+      EncryptionAtRestOptions:
+        Enabled: true
+
+      DomainEndpointOptions:
+        EnforceHTTPS: true
+
+      AdvancedSecurityOptions:
+        Enabled: true
+        InternalUserDatabaseEnabled: true
+        MasterUserOptions:
+          MasterUserName: {{resolve:ssm:/OpenSearch/Username}}
+          MasterUserPassword: {{resolve:ssm:/OpenSearch/Password}}
+
+      AccessPolicies:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action:
+              - "es:ESHttpGet"
+              - "es:ESHttpPost"
+              - "es:ESHttpPut"
+              - "es:DescribeElasticsearchDomain"
+              - "es:DescribeElasticsearchDomain"
+            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+          - Effect: Allow
+            Principal: "*"
+            Action: "es:ESHttpGet"
+            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+            Condition:
+              IpAddress: 
+                aws:SourceIp: "102.88.111.38/32"
+
+
+Outputs:
+  OpenSearchDomainEndpoint:
+    Value: !GetAtt OpenSearchDomain.DomainEndpoint
+
+  OpenSearchDomainArn:
+    Value: !GetAtt OpenSearchDomain.Arn
+
+  OpenSearchDomainName:
+    Value: !Ref OpenSearchDomain

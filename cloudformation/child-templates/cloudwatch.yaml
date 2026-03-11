@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+
+  FirehoseLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: firehose-logs
+      RetentionInDays: 7
+
+  OpenSearchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: open-search-logs
+      RetentionInDays: 7
+
+  ApplicationLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: application-logs
+      RetentionInDays: 7
+
+Outputs:
+  FirehoseLogGroupName:
+    Value: !Ref FirehoseLogGroup
+  FirehoseLogGroupArn:
+    Value: !GetAtt FirehoseLogGroup.Arn
+
+  OpenSearchLogGroupName:
+    Value: !Ref OpenSearchLogGroup
+  OpenSearchLogGroupArn:
+    Value: !GetAtt OpenSearchLogGroup.Arn
+
+  ApplicationLogGroupName:
+    Value: !Ref ApplicationLogGroup
+  ApplicationLogGroupArn:
+    Value: !GetAtt ApplicationLogGroup.Arn

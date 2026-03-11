@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref EC2Role
+
+  LogInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-02dfbd4ff395f2a1b
+      IamInstanceProfile: EC2InstanceProfile
+      UserData: !Base64 |
+          #!/bin/bash
+          yum update -y
+          yum install -y python3
+          yum install -y amazon-cloudwatch-agent
+
+          touch /var/log/app.log
+          chown ec2-user:ec2-user /var/log/app.log
+ 
+          cat << 'EOF' > /home/ec2-user/app.py
+          import logging
+          import time
+          import random
+
+          logging.basicConfig(
+              filename="/var/log/app.log",
+              level=logging.INFO,
+              format="%(asctime)s - %(levelname)s - %(message)s"
+          )
+
+          while True:
+              number = random.randint(1,100)
+
+              if number > 80:
+                  logging.error("High value detected: %s", number)
+              else:
+                  logging.info("Normal value: %s", number)
+
+              time.sleep(5)
+          EOF
+
+          cat << 'EOF' > /etc/systemd/system/python-log-app.service
+          [Unit]
+          Description=Python Logging App
+          After=network.target
+
+          [Service]
+          ExecStart=/usr/bin/python3 /home/ec2-user/app.py
+          Restart=always
+          User=ec2-user
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          systemctl daemon-reload
+          systemctl enable python-log-app
+          systemctl start python-log-app
+
+
+          /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+          -a fetch-config \
+          -m ec2 \
+          -c ssm:/CloudWatch/AgentConfig \
+          -s
+
+          echo "Application started" >> /var/log/app.log

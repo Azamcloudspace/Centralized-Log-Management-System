@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/ec2.yaml
+      
+  CloudWatchStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/cloudwatch.yaml
+
+  SsmStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/ssm.yaml
+
+  OpenSearchStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/opensearch.yaml
+      Parameters:
+        OpenSearcLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
+
+  FirehoseStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/firehose.yaml
+      Parameters:
+        OpenSearchDomain: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainName
+        FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
+
+  CwTOFireStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/cwtofire.yaml
+      Parameters:
+        FirehoseDeliveryStream: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
+        ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
+    
+
+
