@@ -14,7 +14,7 @@ Resources:
     Properties:
       Name: /OpenSearch/Password
       Type: String
-      Value: admin123
+      Value: Admin123$
 
   CWAgentConfigParameter:
     Type: AWS::SSM::Parameter
@@ -41,6 +41,7 @@ Resources:
             }
           }
         }
+
 
 
 
