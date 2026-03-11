@@ -38,7 +38,7 @@ Resources:
                 Action:
                   - "s3:PutObject"
                   - "s3:PutObjectAcl"
-                Resource: !Sub "arn:aws:s3:::${LogsBackupBucket}/*"
+                Resource: !Sub "${LogsBackupBucket.Arn}/*"
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
@@ -64,3 +64,4 @@ Outputs:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
