@@ -27,15 +27,19 @@ Resources:
       InstanceType: t2.micro
       ImageId: ami-02dfbd4ff395f2a1b
       IamInstanceProfile: !Ref EC2InstanceProfile
-      UserData: !Base64 |
+      UserData:
+        Fn::Base64: !Sub |
           #!/bin/bash
-          yum update -y
-          yum install -y python3
-          yum install -y amazon-cloudwatch-agent
 
+          # Update and install dependencies
+          yum update -y
+          yum install -y python3 amazon-cloudwatch-agent
+
+          # Create log file
           touch /var/log/app.log
           chown ec2-user:ec2-user /var/log/app.log
- 
+
+          # Create Python logging app
           cat << 'EOF' > /home/ec2-user/app.py
           import logging
           import time
@@ -49,18 +53,19 @@ Resources:
 
           while True:
               number = random.randint(1,100)
-
               if number > 80:
                   logging.error("High value detected: %s", number)
               else:
                   logging.info("Normal value: %s", number)
-
               time.sleep(5)
           EOF
 
+          chown ec2-user:ec2-user /home/ec2-user/app.py
+
+          # Create systemd service for Python app
           cat << 'EOF' > /etc/systemd/system/python-log-app.service
           [Unit]
-          Description=Python Logging App
+          Description=Python Logging Application
           After=network.target
 
           [Service]
@@ -72,16 +77,15 @@ Resources:
           WantedBy=multi-user.target
           EOF
 
+          # Enable and start Python service
           systemctl daemon-reload
           systemctl enable python-log-app
           systemctl start python-log-app
 
+          # Create CloudWatch Agent configuration (single-line JSON)
+          sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json > /dev/null <<'EOF'
+          {"logs":{"logs_collected":{"files":{"collect_list":[{"file_path":"/var/log/app.log","log_group_name":"application-logs","log_stream_name":"{instance_id}","timestamp_format":"%Y-%m-%d %H:%M:%S"}]}}}}
+          EOF
 
-          /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
-          -a fetch-config \
-          -m ec2 \
-          -c ssm:/CloudWatch/AgentConfig \
-          -s
-
-
-          echo "Application started" >> /var/log/app.log
+          # Start CloudWatch Agent
+          /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a start
