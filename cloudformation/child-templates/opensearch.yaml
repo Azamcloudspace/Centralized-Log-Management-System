@@ -39,8 +39,8 @@ Resources:
         Enabled: true
         InternalUserDatabaseEnabled: true
         MasterUserOptions:
-          MasterUserName: {{resolve:ssm:/OpenSearch/Username}}
-          MasterUserPassword: {{resolve:ssm:/OpenSearch/Password}}
+          MasterUserName: "{{resolve:ssm:/OpenSearch/Username}}"
+          MasterUserPassword: "{{resolve:ssm:/OpenSearch/Password}}"
 
       AccessPolicies:
         Version: '2012-10-17'
@@ -52,7 +52,6 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
-              - "es:DescribeElasticsearchDomain"
               - "es:DescribeElasticsearchDomain"
             Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
           - Effect: Allow
@@ -73,3 +72,4 @@ Outputs:
 
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
+
