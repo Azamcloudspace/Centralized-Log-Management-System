@@ -5,13 +5,25 @@ Resources:
     Properties:
       LogGroupName: firehose-logs
       RetentionInDays: 7
+      
+  FirehoseLogStream:
+    Type: AWS::Logs::LogStream
+    Properties:
+      LogGroupName: !Ref FirehoseLogGroup
+      LogStreamName: FirehoseStreamLogs
 
   OpenSearchLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: open-search-logs
       RetentionInDays: 7
-
+      
+  OpenSearchLogStream:
+    Type: AWS::Logs::LogStream
+    Properties:
+      LogGroupName: !Ref OpenSearchLogGroup
+      LogStreamName: OpenSearchStreamLogs
+      
   ApplicationLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -43,31 +55,6 @@ Resources:
           ]
         }
 
-  FirehoseLogGroupPolicy:
-    Type: AWS::Logs::ResourcePolicy
-    Properties:
-      PolicyName: FirehoseLogGroupPolicy
-      PolicyDocument: !Sub |
-        {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "firehose.amazonaws.com"
-              },
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Resource": [
-                "${FirehoseLogGroup.Arn}",
-                "${FirehoseLogGroup.Arn}:*"
-              ]
-            }
-          ]
-        }
-
 Outputs:
   FirehoseLogGroupName:
     Value: !Ref FirehoseLogGroup
@@ -81,3 +68,4 @@ Outputs:
     Value: !Ref ApplicationLogGroup
   ApplicationLogGroupArn:
     Value: !GetAtt ApplicationLogGroup.Arn
+
