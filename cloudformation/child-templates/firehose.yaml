@@ -43,27 +43,18 @@ Resources:
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
     Properties:
-
       DeliveryStreamName: log-delivery-stream
-
       DeliveryStreamType: DirectPut
-
       AmazonopensearchserviceDestinationConfiguration:
-
         DomainARN: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
-
         IndexName: application-logs
-
         RoleARN: !GetAtt FirehoseRole.Arn
-
         S3Configuration:
           BucketARN: !GetAtt LogsBackupBucket.Arn
           RoleARN: !GetAtt FirehoseRole.Arn
-
         CloudWatchLoggingOptions:
            Enabled: true
            LogGroupName: !Ref FirehoseLogGroup
-
         BufferingHints:
           IntervalInSeconds: 300
           SizeInMBs: 5
