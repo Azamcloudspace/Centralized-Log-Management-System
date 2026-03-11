@@ -39,6 +39,12 @@ Resources:
                   - "s3:PutObject"
                   - "s3:PutObjectAcl"
                 Resource: !Sub "${LogsBackupBucket.Arn}/*"
+                
+              - Effect: Allow
+                Action:
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogStream"
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
@@ -64,5 +70,6 @@ Outputs:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
 
 
