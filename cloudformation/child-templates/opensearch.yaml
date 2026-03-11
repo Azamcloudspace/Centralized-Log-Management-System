@@ -8,17 +8,14 @@ Resources:
   OpenSearchDomain:
     Type: AWS::OpenSearchService::Domain
     Properties:
-
       DomainName: logs-domain
-
       EngineVersion: OpenSearch_2.11
-
       ClusterConfig:
         InstanceType: t3.small.search
         InstanceCount: 1
-
+        
       LogPublishingOptions:
-        INDEX_SLOW_LOGS:
+        ES_APPLICATION_LOGS:
           CloudWatchLogsLogGroupArn: !Ref OpenSearchLogGroup
           Enabled: true
 
@@ -53,15 +50,14 @@ Resources:
               - "es:ESHttpPost"
               - "es:ESHttpPut"
               - "es:DescribeElasticsearchDomain"
-            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain.DomainName}/*"
           - Effect: Allow
             Principal: "*"
             Action: "es:ESHttpGet"
-            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain.DomainName}/*"
             Condition:
               IpAddress: 
-                aws:SourceIp: "102.88.111.38/32"
-
+                aws:SourceIp: "41.76.192.17/32"
 
 Outputs:
   OpenSearchDomainEndpoint:
@@ -72,4 +68,5 @@ Outputs:
 
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
+
 
