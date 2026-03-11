@@ -4,7 +4,6 @@ Resources:
   
   EC2Stack:
     DependsOn:
-      - SsmStack
       - CloudWatchStack
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -44,6 +43,7 @@ Resources:
         FirehoseDeliveryStream: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
         ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
     
+
 
 
 
