@@ -53,9 +53,8 @@ Resources:
                 Action:
                   - "logs:PutLogEvents"
                   - "logs:CreateLogStream"
-                Resource: 
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
+                  - "logs:CreateLogGroup"
+                Resource: "*"
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
@@ -69,16 +68,13 @@ Resources:
         S3Configuration:
           BucketARN: !GetAtt LogsBackupBucket.Arn
           RoleARN: !GetAtt FirehoseRole.Arn
-        CloudWatchLoggingOptions:
-          Enabled: true
-          LogGroupName: !Ref FirehoseLogGroup
-          LogStreamName: !Ref FirehoseLogStream
 
 Outputs: 
   FirehoseDeliveryStreamName:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
 
 
 
