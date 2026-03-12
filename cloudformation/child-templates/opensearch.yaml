@@ -50,11 +50,17 @@ Resources:
               - "es:ESHttpPost"
               - "es:ESHttpPut"
               - "es:DescribeElasticsearchDomain"
-            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+            Resource: 
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
           - Effect: Allow
             Principal: "*"
-            Action: "es:ESHttpGet"
-            Resource: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+            Action: 
+              - "es:ESHttpGet"
+              - "es:ESHttpPost"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
             Condition:
               IpAddress: 
                 aws:SourceIp: "41.76.192.17/32"
@@ -68,6 +74,7 @@ Outputs:
 
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
+
 
 
 
