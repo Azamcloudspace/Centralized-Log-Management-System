@@ -53,7 +53,9 @@ Resources:
                 Action:
                   - "logs:PutLogEvents"
                   - "logs:CreateLogStream"
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
+                Resource: 
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
@@ -71,15 +73,13 @@ Resources:
           Enabled: true
           LogGroupName: !Ref FirehoseLogGroup
           LogStreamName: !Ref FirehoseLogStream
-        BufferingHints:
-          IntervalInSeconds: 300
-          SizeInMBs: 5
 
 Outputs: 
   FirehoseDeliveryStreamName:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
 
 
 
