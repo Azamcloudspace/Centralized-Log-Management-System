@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Resources:
-  
+
   EC2Stack:
     DependsOn:
       - CloudWatchStack
@@ -26,23 +26,19 @@ Resources:
       Parameters:
         OpenSearchLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
 
-  FirehoseStack:
+  LambdaStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/firehose.yaml
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/Lambda.yaml
       Parameters:
         OpenSearchDomain: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainName
-        FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
-        FirehoseLogStream: !GetAtt CloudWatchStack.Outputs.FirehoseLogStreamName
-
-  CwTOFireStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/cwtofire.yaml
-      Parameters:
-        FirehoseDeliveryStream: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
+        LambdaLogGroup: !GetAtt CloudWatchStack.Outputs.LambdaLogGroupName
+        OpenSearchEndpoint: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainEndpoint
         ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
+        
+
     
+
 
 
 
