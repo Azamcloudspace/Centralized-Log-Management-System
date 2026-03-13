@@ -21,6 +21,8 @@ Resources:
             Principal:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
         - PolicyName: LambdaOpenSearchPolicy
           PolicyDocument:
@@ -28,19 +30,20 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "es:ESHttpGet"
-                  - "es:ESHttpPost"
-                  - "es:ESHttpPut"
-                  - "es:ESHttpDelete"
-                  - "es:DescribeElasticsearchDomain"
+                  - es:ESHttpGet
+                  - es:ESHttpPost
+                  - es:ESHttpPut
+                  - es:ESHttpDelete
+                  - es:DescribeDomain
+                  - es:ESHttp*
                 Resource:
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
               - Effect: Allow
                 Action:
-                  - "logs:PutLogEvents"
-                  - "logs:CreateLogStream"
-                  - "logs:CreateLogGroup"
+                  - logs:PutLogEvents
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
                 Resource:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}:*"
@@ -61,8 +64,8 @@ Resources:
         Variables:
           OPENSEARCH_ENDPOINT: !Ref OpenSearchEndpoint
           INDEX_NAME: application-logs
-          OPENSEARCH_USERNAME: "{{resolve:ssm:/OpenSearch/Username}}"
-          OPENSEARCH_PASSWORD: "{{resolve:ssm:/OpenSearch/Password}}"
+          OPENSEARCH_USERNAME: "{{resolve:ssm-secure:/OpenSearch/Username}}"
+          OPENSEARCH_PASSWORD: "{{resolve:ssm-secure:/OpenSearch/Password}}"
       Code:
         ZipFile: |
           import json
@@ -144,6 +147,69 @@ Resources:
               'body': f"Processed {len(documents)} log events"
             }
 
+  SecurityMappingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: opensearch-security-mapping
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 30
+      Environment:
+        Variables:
+          OPENSEARCH_ENDPOINT: !Ref OpenSearchEndpoint
+          OPENSEARCH_USERNAME: "{{resolve:ssm-secure:/OpenSearch/Username}}"
+          OPENSEARCH_PASSWORD: "{{resolve:ssm-secure:/OpenSearch/Password}}"
+          LAMBDA_ROLE_ARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/OpenSearchLambdaRole"
+          AZAM_USER_ARN: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
+      Code:
+        ZipFile: |
+          import json
+          import urllib.request
+          import base64
+          import os
+          import cfnresponse
+
+          def handler(event, context):
+            if event['RequestType'] == 'Delete':
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+              return
+            try:
+              endpoint = os.environ['OPENSEARCH_ENDPOINT']
+              username = os.environ['OPENSEARCH_USERNAME']
+              password = os.environ['OPENSEARCH_PASSWORD']
+              lambda_role_arn = os.environ['LAMBDA_ROLE_ARN']
+              azam_user_arn = os.environ['AZAM_USER_ARN']
+              credentials = base64.b64encode(
+                f"{username}:{password}".encode()
+              ).decode()
+              payload = json.dumps({
+                "backend_roles": [lambda_role_arn],
+                "users": [azam_user_arn]
+              }).encode()
+              url = f"https://{endpoint}/_plugins/_security/api/rolesmapping/all_access"
+              req = urllib.request.Request(
+                url,
+                data=payload,
+                headers={
+                  'Content-Type': 'application/json',
+                  'Authorization': f'Basic {credentials}'
+                },
+                method='PUT'
+              )
+              with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read())
+                print(f"Security mapping result: {result}")
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+            except Exception as e:
+              print(f"Error: {str(e)}")
+              cfnresponse.send(event, context, cfnresponse.FAILED, {})
+
+  SecurityMappingTrigger:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt SecurityMappingFunction.Arn
+
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
@@ -164,7 +230,6 @@ Outputs:
   LambdaFunctionName:
     Value: !Ref OpenSearchLambdaFunction
   LambdaFunctionArn:
-
     Value: !GetAtt OpenSearchLambdaFunction.Arn
 
 
