@@ -50,12 +50,10 @@ Resources:
         }
 
 Outputs:
-  FirehoseLogGroupName:
-    Value: !Ref FirehoseLogGroup
-  FirehoseLogGroupArn:
-    Value: !GetAtt FirehoseLogGroup.Arn
-  FirehoseLogStreamName:
-    Value: !Ref FirehoseLogStream
+  LambdaLogGroupName:
+    Value: !Ref LambdaLogGroup
+  LambdaLogGroupArn:
+    Value: !GetAtt LambdaLogGroup.Arn
   OpenSearchLogGroupName:
     Value: !Ref OpenSearchLogGroup
   OpenSearchLogGroupArn:
@@ -64,6 +62,7 @@ Outputs:
     Value: !Ref ApplicationLogGroup
   ApplicationLogGroupArn:
     Value: !GetAtt ApplicationLogGroup.Arn
+
 
 
 
