@@ -28,11 +28,11 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - es:ESHttpGet
-                  - es:ESHttpPost
-                  - es:ESHttpPut
-                  - es:ESHttpDelete
-                  - es:DescribeDomain
+                  - "es:ESHttpGet"
+                  - "es:ESHttpPost"
+                  - "es:ESHttpPut"
+                  - "es:ESHttpDelete"
+                  - "es:DescribeElasticSearchDomain"
                 Resource:
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
@@ -166,3 +166,4 @@ Outputs:
   LambdaFunctionArn:
 
     Value: !GetAtt OpenSearchLambdaFunction.Arn
+
