@@ -1,0 +1,167 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  OpenSearchDomain:
+    Type: String
+  OpenSearchEndpoint:
+    Type: String
+  ApplicationLogGroup:
+    Type: String
+  LambdaLogGroup:
+    Type: String
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: OpenSearchLambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaOpenSearchPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - es:ESHttpGet
+                  - es:ESHttpPost
+                  - es:ESHttpPut
+                  - es:ESHttpDelete
+                  - es:DescribeDomain
+                Resource:
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+              - Effect: Allow
+                Action:
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogStream"
+                  - "logs:CreateLogGroup"
+                Resource:
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}:*"
+
+  OpenSearchLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: OpenSearchLambda
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      MemorySize: 256
+      LoggingConfig:
+        LogFormat: JSON
+        LogGroup: !Ref LambdaLogGroup
+      Environment:
+        Variables:
+          OPENSEARCH_ENDPOINT: !Ref OpenSearchEndpoint
+          INDEX_NAME: application-logs
+          OPENSEARCH_USERNAME: "{{resolve:ssm-secure:/OpenSearch/Username}}"
+          OPENSEARCH_PASSWORD: "{{resolve:ssm-secure:/OpenSearch/Password}}"
+      Code:
+        ZipFile: |
+          import json
+          import base64
+          import gzip
+          import urllib.request
+          import os
+          import re
+          from datetime import datetime
+
+          def get_opensearch_credentials():
+            username = os.environ['OPENSEARCH_USERNAME']
+            password = os.environ['OPENSEARCH_PASSWORD']
+            return username, password
+
+          def send_to_opensearch(endpoint, index_name, documents, username, password):
+            credentials = base64.b64encode(f"{username}:{password}".encode()).decode()
+            bulk_body = ""
+            for doc in documents:
+              action = json.dumps({"index": {"_index": index_name}})
+              bulk_body += f"{action}\n{json.dumps(doc)}\n"
+            url = f"https://{endpoint}/{index_name}/_bulk"
+            req = urllib.request.Request(
+              url,
+              data=bulk_body.encode('utf-8'),
+              headers={
+                'Content-Type': 'application/x-ndjson',
+                'Authorization': f'Basic {credentials}'
+              },
+              method='POST'
+            )
+            with urllib.request.urlopen(req) as response:
+              result = json.loads(response.read())
+              if result.get('errors'):
+                print(f"Bulk indexing errors: {json.dumps(result)}")
+              return result
+
+          def handler(event, context):
+            endpoint = os.environ['OPENSEARCH_ENDPOINT']
+            index_name = os.environ['INDEX_NAME']
+            username, password = get_opensearch_credentials()
+            documents = []
+            for record in event['Records']:
+              compressed_data = base64.b64decode(record['awslogs']['data'])
+              try:
+                decompressed = gzip.decompress(compressed_data)
+              except Exception:
+                decompressed = compressed_data
+              log_data = json.loads(decompressed)
+              if log_data.get('messageType') == 'DATA_MESSAGE':
+                for log_event in log_data.get('logEvents', []):
+                  message = log_event['message']
+                  match = re.match(
+                    r'(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) - (?P<level>\w+) - (?P<message>.+)',
+                    message
+                  )
+                  doc = {
+                    '@timestamp': datetime.utcfromtimestamp(
+                      log_event['timestamp'] / 1000
+                    ).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z',
+                    'raw_message': message,
+                    'log_group': log_data.get('logGroup'),
+                    'log_stream': log_data.get('logStream'),
+                    'owner': log_data.get('owner')
+                  }
+                  if match:
+                    doc['level'] = match.group('level')
+                    doc['message'] = match.group('message')
+                  else:
+                    doc['message'] = message
+                  documents.append(doc)
+            if documents:
+              result = send_to_opensearch(endpoint, index_name, documents, username, password)
+              print(f"Indexed {len(documents)} documents. Result: {json.dumps(result)}")
+            else:
+              print("No documents to index")
+            return {
+              'statusCode': 200,
+              'body': f"Processed {len(documents)} log events"
+            }
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt OpenSearchLambdaFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: logs.amazonaws.com
+      SourceArn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${ApplicationLogGroup}:*"
+
+  LogSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    DependsOn: LambdaInvokePermission
+    Properties:
+      LogGroupName: !Ref ApplicationLogGroup
+      FilterPattern: ""
+      DestinationArn: !GetAtt OpenSearchLambdaFunction.Arn
+
+Outputs:
+  LambdaFunctionName:
+    Value: !Ref OpenSearchLambdaFunction
+  LambdaFunctionArn:
+    Value: !GetAtt OpenSearchLambdaFunction.Arn
