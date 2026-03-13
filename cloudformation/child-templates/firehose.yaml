@@ -68,12 +68,17 @@ Resources:
         S3Configuration:
           BucketARN: !GetAtt LogsBackupBucket.Arn
           RoleARN: !GetAtt FirehoseRole.Arn
-
+        CloudWatchLoggingOptions:
+          Enabled: true
+          LogGroupName: !Ref FirehoseLogGroup
+          LogStreamName: !Ref FirehoseLogStream
+          
 Outputs: 
   FirehoseDeliveryStreamName:
     Value: !Ref FirehoseStream
   FirehoseDeliveryStreamArn:
     Value: !GetAtt FirehoseStream.Arn
+
 
 
 
