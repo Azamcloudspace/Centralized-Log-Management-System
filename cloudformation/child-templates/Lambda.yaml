@@ -61,8 +61,8 @@ Resources:
         Variables:
           OPENSEARCH_ENDPOINT: !Ref OpenSearchEndpoint
           INDEX_NAME: application-logs
-          OPENSEARCH_USERNAME: "{{resolve:ssm-secure:/OpenSearch/Username}}"
-          OPENSEARCH_PASSWORD: "{{resolve:ssm-secure:/OpenSearch/Password}}"
+          OPENSEARCH_USERNAME: "{{resolve:ssm:/OpenSearch/Username}}"
+          OPENSEARCH_PASSWORD: "{{resolve:ssm:/OpenSearch/Password}}"
       Code:
         ZipFile: |
           import json
@@ -164,4 +164,5 @@ Outputs:
   LambdaFunctionName:
     Value: !Ref OpenSearchLambdaFunction
   LambdaFunctionArn:
+
     Value: !GetAtt OpenSearchLambdaFunction.Arn
