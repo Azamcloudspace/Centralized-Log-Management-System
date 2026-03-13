@@ -44,7 +44,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: firehose.amazonaws.com
+              Service: lambda.amazonaws.com
             Action:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
@@ -75,6 +75,7 @@ Outputs:
 
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
+
 
 
 
