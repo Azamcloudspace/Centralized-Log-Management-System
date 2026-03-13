@@ -1,16 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
-  FirehoseLogGroup:
+  LambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: firehose-logs
+      LogGroupName: openserach-lambda-logs
       RetentionInDays: 7
-      
-  FirehoseLogStream:
-    Type: AWS::Logs::LogStream
-    Properties:
-      LogGroupName: !Ref FirehoseLogGroup
-      LogStreamName: FirehoseStreamLogs
 
   OpenSearchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -70,5 +64,6 @@ Outputs:
     Value: !Ref ApplicationLogGroup
   ApplicationLogGroupArn:
     Value: !GetAtt ApplicationLogGroup.Arn
+
 
 
