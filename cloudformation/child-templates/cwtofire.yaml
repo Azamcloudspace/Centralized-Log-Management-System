@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Parameters:
-  FirehoseDeliveryStream:
+  LambdaFunction:
     Type: String
     
   ApplicationLogGroup:
@@ -8,10 +8,10 @@ Parameters:
 
 Resources:
 
-  CloudWatchToFirehoseRole:
+  CloudWatchToLambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: CloudWatchToFirehoseRole
+      RoleName: CloudWatchToLambda
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -21,20 +21,20 @@ Resources:
             Action: sts:AssumeRole
 
       Policies:
-        - PolicyName: FirehoseWritePolicy
+        - PolicyName: InvokeLambdaPolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                  - firehose:PutRecord
-                  - firehose:PutRecordBatch
-                Resource: !Ref FirehoseDeliveryStream
+                  - lambda:InvokeFunction
+                Resource: !Ref LambdaFunction
 
   LogSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
     Properties:
       LogGroupName: !Ref ApplicationLogGroup
       FilterPattern: ""
-      DestinationArn: !Ref FirehoseDeliveryStream
-      RoleArn: !GetAtt CloudWatchToFirehoseRole.Arn
+      DestinationArn: !Ref LambdaFunction
+      RoleArn: !GetAtt CloudWatchToLambdaRole.Arn
+
