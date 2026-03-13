@@ -49,6 +49,7 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
+              - "es:ESHttpDelete"
               - "es:DescribeElasticsearchDomain"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
@@ -75,6 +76,7 @@ Outputs:
 
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
+
 
 
 
