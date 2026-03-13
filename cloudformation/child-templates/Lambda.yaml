@@ -32,7 +32,7 @@ Resources:
                   - "es:ESHttpPost"
                   - "es:ESHttpPut"
                   - "es:ESHttpDelete"
-                  - "es:DescribeElasticSearchDomain"
+                  - "es:DescribeElasticsearchDomain"
                 Resource:
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
@@ -166,4 +166,5 @@ Outputs:
   LambdaFunctionArn:
 
     Value: !GetAtt OpenSearchLambdaFunction.Arn
+
 
