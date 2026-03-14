@@ -64,8 +64,8 @@ Resources:
         Variables:
           OPENSEARCH_ENDPOINT: !Ref OpenSearchEndpoint
           INDEX_NAME: application-logs
-          OPENSEARCH_USERNAME: "{{resolve:ssm-secure:/OpenSearch/Username}}"
-          OPENSEARCH_PASSWORD: "{{resolve:ssm-secure:/OpenSearch/Password}}"
+          OPENSEARCH_USERNAME: "{{resolve:ssm:/OpenSearch/Username}}"
+          OPENSEARCH_PASSWORD: "{{resolve:ssm:/OpenSearch/Password}}"
       Code:
         ZipFile: |
           import json
@@ -158,8 +158,8 @@ Resources:
       Environment:
         Variables:
           OPENSEARCH_ENDPOINT: !Ref OpenSearchEndpoint
-          OPENSEARCH_USERNAME: "{{resolve:ssm-secure:/OpenSearch/Username}}"
-          OPENSEARCH_PASSWORD: "{{resolve:ssm-secure:/OpenSearch/Password}}"
+          OPENSEARCH_USERNAME: "{{resolve:ssm:/OpenSearch/Username}}"
+          OPENSEARCH_PASSWORD: "{{resolve:ssm:/OpenSearch/Password}}"
           LAMBDA_ROLE_ARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/OpenSearchLambdaRole"
           AZAM_USER_ARN: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
       Code:
@@ -231,5 +231,6 @@ Outputs:
     Value: !Ref OpenSearchLambdaFunction
   LambdaFunctionArn:
     Value: !GetAtt OpenSearchLambdaFunction.Arn
+
 
 
