@@ -44,7 +44,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: lambda.amazonaws.com
+              Service: firehose.amazonaws.com
             Action:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
