@@ -55,6 +55,30 @@ Resources:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
           - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/OpenSearchLambdaRole"
+            Action:
+              - "es:ESHttpGet"
+              - "es:ESHttpPost"
+              - "es:ESHttpPut"
+              - "es:ESHttpDelete"
+              - "es:DescribeElasticsearchDomain"
+            Resource: 
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
+            Action:
+              - "es:ESHttpGet"
+              - "es:ESHttpPost"
+              - "es:ESHttpPut"
+              - "es:ESHttpDelete"
+              - "es:DescribeElasticsearchDomain"
+            Resource: 
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+          - Effect: Allow
             Principal: "*"
             Action: 
               - "es:ESHttpPut"
@@ -76,6 +100,7 @@ Outputs:
 
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
+
 
 
 
