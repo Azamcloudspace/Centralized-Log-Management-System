@@ -6,6 +6,8 @@ Parameters:
   FirehoseLogGroup:
     Type: String
 
+  FirehoseLogStream:
+    Type: String
 Resources:
   LogsBackupBucket:
     Type: AWS::S3::Bucket
