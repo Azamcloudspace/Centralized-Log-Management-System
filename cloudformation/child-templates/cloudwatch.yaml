@@ -1,5 +1,17 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
+  FirehoseLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: open-search-logs
+      RetentionInDays: 7
+      
+  FirehoseLogStream:
+    Type: AWS::Logs::LogStream
+    Properties:
+      LogGroupName: !Ref FirehoseLogGroup
+      LogStreamName: FirehoseStreamLogs
+      
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -50,6 +62,10 @@ Resources:
         }
 
 Outputs:
+  FirehoseLogGroupName:
+    Value: !Ref FirehoseLogGroup
+  FirehoseLogStreamName:
+    Value: !Ref FirehoseLogStream
   LambdaLogGroupName:
     Value: !Ref LambdaLogGroup
   LambdaLogGroupArn:
