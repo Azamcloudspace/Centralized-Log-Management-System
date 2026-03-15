@@ -27,6 +27,8 @@ Resources:
         OpenSearchLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
 
   FirehoseStack:
+    DependsOn:
+      - LambdaStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/firehose.yaml
@@ -36,6 +38,8 @@ Resources:
         FirehoseLogStream: !GetAtt CloudWatchStack.Outputs.FirehoseLogStream
 
   CwTOFireStack:
+    DependsOn:
+      - LambdaStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/cwtofire.yaml
