@@ -52,7 +52,8 @@ Resources:
               - "es:ESHttpDelete"
               - "es:DescribeElasticsearchDomain"
             Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/OpenSearchLambdaRole"
@@ -63,7 +64,8 @@ Resources:
               - "es:ESHttpDelete"
               - "es:DescribeElasticsearchDomain"
             Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
@@ -74,7 +76,8 @@ Resources:
               - "es:ESHttpDelete"
               - "es:DescribeElasticsearchDomain"
             Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal: "*"
             Action: 
@@ -82,7 +85,8 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
             Resource:
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
             Condition:
               IpAddress: 
                 aws:SourceIp: "41.76.192.17/32"
