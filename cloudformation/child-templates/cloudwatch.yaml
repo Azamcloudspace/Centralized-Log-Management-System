@@ -15,7 +15,7 @@ Resources:
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: openserach-lambda-logs
+      LogGroupName: openserach-lambda-log
       RetentionInDays: 7
 
   OpenSearchLogGroup:
