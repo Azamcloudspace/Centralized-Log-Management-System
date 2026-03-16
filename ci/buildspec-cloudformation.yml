@@ -9,7 +9,7 @@ phases:
     commands:
       - echo Packaging templates...
       - aws s3 sync cloudformation/child-templates/ s3://iac-bucket-azamcloud/ 
-      - aws cloudformation deploy --template-file cloudformation/master/master.yaml --stack-name Centralized-Logging-Stack --capabilities CAPABILITY_NAMED_IAM
+      - aws cloudformation deploy --template-file cloudformation/master/master.yaml --stack-name Centralized-Logging-Stacks --capabilities CAPABILITY_NAMED_IAM
 
 artifacts:
   files:
