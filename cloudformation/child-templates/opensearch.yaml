@@ -54,16 +54,6 @@ Resources:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/OpenSearchLambdaRole"
-            Action:
-              - "es:ESHttpGet"
-              - "es:ESHttpPost"
-              - "es:ESHttpPut"
-            Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
-          - Effect: Allow
-            Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
             Action:
               - "es:ESHttpGet"
