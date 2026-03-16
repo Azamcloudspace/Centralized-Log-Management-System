@@ -8,7 +8,7 @@ Resources:
   OpenSearchDomain:
     Type: AWS::OpenSearchService::Domain
     Properties:
-      DomainName: logs-domain
+      DomainName: log-domain
       EngineVersion: OpenSearch_2.11
       ClusterConfig:
         InstanceType: t3.small.search
