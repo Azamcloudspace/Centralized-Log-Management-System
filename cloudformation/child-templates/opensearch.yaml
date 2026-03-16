@@ -44,7 +44,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/FirehoseRole"
+              Service: firehose.amazonaws.com
             Action:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
