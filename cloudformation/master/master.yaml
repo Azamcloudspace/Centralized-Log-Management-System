@@ -28,7 +28,6 @@ Resources:
 
   FirehoseStack:
     DependsOn:
-      - LambdaStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/firehose.yaml
@@ -39,7 +38,6 @@ Resources:
 
   CwTOFireStack:
     DependsOn:
-      - LambdaStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/cwtofire.yaml
@@ -47,16 +45,7 @@ Resources:
         FirehoseDeliveryStream: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
         ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
 
-  LambdaStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/Lambda.yaml
-      Parameters:
-        OpenSearchDomain: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainName
-        LambdaLogGroup: !GetAtt CloudWatchStack.Outputs.LambdaLogGroupName
-        OpenSearchEndpoint: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainEndpoint
-        ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
-        
+
 
     
 
