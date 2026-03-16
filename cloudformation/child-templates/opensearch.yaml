@@ -52,7 +52,6 @@ Resources:
               - "es:ESHttpDelete"
               - "es:DescribeElasticsearchDomain"
             Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
           - Effect: Allow
             Principal:
@@ -64,7 +63,6 @@ Resources:
               - "es:ESHttpDelete"
               - "es:DescribeElasticsearchDomain"
             Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
           - Effect: Allow
             Principal:
@@ -76,7 +74,6 @@ Resources:
               - "es:ESHttpDelete"
               - "es:DescribeElasticsearchDomain"
             Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
           - Effect: Allow
             Principal: "*"
@@ -85,7 +82,6 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
             Resource:
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/logs-domain/*"
             Condition:
               IpAddress: 
