@@ -44,12 +44,11 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: firehose.amazonaws.com
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/FirehoseRole"
             Action:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
-              - "es:DescribeElasticsearchDomain"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -60,7 +59,6 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
-              - "es:DescribeElasticsearchDomain"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -71,7 +69,6 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
-              - "es:DescribeElasticsearchDomain"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
