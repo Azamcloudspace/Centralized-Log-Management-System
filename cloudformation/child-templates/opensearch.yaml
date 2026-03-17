@@ -49,6 +49,7 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
+              - "es:ESHttpDelete"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -59,6 +60,7 @@ Resources:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
+              - "es:ESHttpDelete"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -68,6 +70,7 @@ Resources:
               - "es:ESHttpPut"
               - "es:ESHttpGet"
               - "es:ESHttpPost"
+              - "es:ESHttpDelete"
             Resource:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
