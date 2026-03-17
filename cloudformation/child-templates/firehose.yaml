@@ -8,6 +8,10 @@ Parameters:
 
   FirehoseLogStream:
     Type: String
+
+  OpenSearchFirehoseRole:
+    Type: String
+    
 Resources:
   LogsBackupBucket:
     Type: AWS::S3::Bucket
@@ -26,16 +30,10 @@ Resources:
               Service: firehose.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: FirehoseToOpenSearchPolicy
+        - PolicyName: FirehoseS3Policy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Allow
-                Action:
-                  - "es:*"
-                Resource: 
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
               - Effect: Allow
                 Action:
                   - "s3:ListBucket"
@@ -45,14 +43,6 @@ Resources:
                 Resource: 
                   - !GetAtt LogsBackupBucket.Arn
                   - !Sub "${LogsBackupBucket.Arn}/*"
-              - Effect: Allow
-                Action:
-                  - "logs:CreateLogGroup"
-                  - "logs:PutLogEvents"
-                  - "logs:CreateLogStream"
-                Resource: 
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
@@ -62,7 +52,7 @@ Resources:
       AmazonopensearchserviceDestinationConfiguration:
         DomainARN: !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
         IndexName: application-logs
-        RoleARN: !GetAtt FirehoseRole.Arn
+        RoleARN: !Ref OpenSearchFirehoseRole
         S3Configuration:
           BucketARN: !GetAtt LogsBackupBucket.Arn
           RoleARN: !GetAtt FirehoseRole.Arn
