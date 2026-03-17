@@ -98,7 +98,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: firehose.amazonaws.com
+              AWS: !GetAtt OpenSearchFirehoseRole.Arn
             Action:
               - "es:*"
             Resource: 
