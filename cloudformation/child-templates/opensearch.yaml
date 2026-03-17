@@ -5,6 +5,27 @@ Parameters:
 
 Resources:
 
+  OpenSearchAdminRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: OpenSearchAdminRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: OpenSearchFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "es:*"
+                Resource: "*"
+
   OpenSearchDomain:
     Type: AWS::OpenSearchService::Domain
     Properties:
@@ -34,10 +55,9 @@ Resources:
 
       AdvancedSecurityOptions:
         Enabled: true
-        InternalUserDatabaseEnabled: true
+        InternalUserDatabaseEnabled: false
         MasterUserOptions:
-          MasterUserName: "{{resolve:ssm:/OpenSearch/Username}}"
-          MasterUserPassword: "{{resolve:ssm:/OpenSearch/Password}}"
+          MasterUserARN: !GetAtt OpenSearchAdminRole.Arn
 
       AccessPolicies:
         Version: '2012-10-17'
@@ -55,28 +75,12 @@ Resources:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
+              AWS: !GetAtt OpenSearchAdminRole.Arn
             Action:
-              - "es:ESHttpGet"
-              - "es:ESHttpPost"
-              - "es:ESHttpPut"
-              - "es:ESHttpDelete"
+              - "es:*"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
-          - Effect: Allow
-            Principal: "*"
-            Action: 
-              - "es:ESHttpPut"
-              - "es:ESHttpGet"
-              - "es:ESHttpPost"
-              - "es:ESHttpDelete"
-            Resource:
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
-            Condition:
-              IpAddress: 
-                aws:SourceIp: "41.76.192.17/32"
 
 Outputs:
   OpenSearchDomainEndpoint:
