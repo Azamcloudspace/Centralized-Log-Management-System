@@ -35,12 +35,15 @@ Resources:
                   - "es:ESHttpGet"
                   - "es:ESHttpPost"
                   - "es:ESHttpPut"
+                  - "es:ESHttpDelete"
                   - "es:DescribeElasticsearchDomain"
                 Resource: 
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
               - Effect: Allow
                 Action:
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
                   - "s3:PutObject"
                   - "s3:PutObjectAcl"
                 Resource: 
@@ -52,8 +55,8 @@ Resources:
                   - "logs:PutLogEvents"
                   - "logs:CreateLogStream"
                 Resource: 
-                  - "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
-                  - "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
