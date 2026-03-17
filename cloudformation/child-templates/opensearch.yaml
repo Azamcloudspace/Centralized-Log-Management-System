@@ -2,13 +2,14 @@ AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
   OpenSearchLogGroup:
     Type: String
-
+  FirehoseLogGroup:
+    Type: String
 Resources:
 
-  FirehoseRole:
+  OpenSearchFirehoseRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: FirehoseRole
+      RoleName: OpenSearchFirehoseRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -29,8 +30,8 @@ Resources:
                   - "es:ESHttpDelete"
                   - "es:DescribeElasticsearchDomain"
                 Resource: 
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
               - Effect: Allow
                 Action:
                   - "logs:CreateLogGroup"
@@ -127,6 +128,9 @@ Outputs:
 
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
+
+  OpenSearchFirehoseRoleArn:
+    Value: !GetAtt OpenSearchFirehoseRole.Arn
 
 
 
