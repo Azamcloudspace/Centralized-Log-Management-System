@@ -32,11 +32,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "es:ESHttpGet"
-                  - "es:ESHttpPost"
-                  - "es:ESHttpPut"
-                  - "es:ESHttpDelete"
-                  - "es:DescribeElasticsearchDomain"
+                  - "es:*"
                 Resource: 
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
