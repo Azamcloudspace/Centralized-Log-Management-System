@@ -25,6 +25,7 @@ Resources:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/opensearch.yaml
       Parameters:
         OpenSearchLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
+        FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
 
   FirehoseStack:
     Type: AWS::CloudFormation::Stack
@@ -34,6 +35,7 @@ Resources:
         OpenSearchDomain: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainName
         FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
         FirehoseLogStream: !GetAtt CloudWatchStack.Outputs.FirehoseLogStreamName
+        OpenSearchFirehoseRole: !GetAtt OpenSearchStack.Outputs.OpenSearchFirehoseRoleArn
 
   CwTOFireStack:
     Type: AWS::CloudFormation::Stack
