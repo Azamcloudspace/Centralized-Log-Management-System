@@ -55,7 +55,7 @@ Resources:
 
       AdvancedSecurityOptions:
         Enabled: true
-        InternalUserDatabaseEnabled: false
+        InternalUserDatabaseEnabled: true
         MasterUserOptions:
           MasterUserARN: !GetAtt OpenSearchAdminRole.Arn
 
@@ -66,6 +66,21 @@ Resources:
             Principal:
               Service: firehose.amazonaws.com
             Action:
+              - "es:*"
+            Resource: 
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
+            Action:
+              - "es:*"
+            Resource: 
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
+          - Effect: Allow
+            Principal: "*"
+            Action:
               - "es:ESHttpGet"
               - "es:ESHttpPost"
               - "es:ESHttpPut"
@@ -73,15 +88,9 @@ Resources:
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
-          - Effect: Allow
-            Principal:
-              AWS: !GetAtt OpenSearchAdminRole.Arn
-            Action:
-              - "es:*"
-            Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
-
+            Condition:
+              IpAddress: 
+                aws:SourceIp: "41.76.192.17/32"
 Outputs:
   OpenSearchDomainEndpoint:
     Value: !GetAtt OpenSearchDomain.DomainEndpoint
