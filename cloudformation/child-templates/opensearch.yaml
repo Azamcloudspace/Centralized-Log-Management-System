@@ -6,42 +6,6 @@ Parameters:
     Type: String
 Resources:
 
-  OpenSearchFirehoseRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: OpenSearchFirehoseRole
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: firehose.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: FirehoseToOpenSearchPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "es:ESHttpGet"
-                  - "es:ESHttpPost"
-                  - "es:ESHttpPut"
-                  - "es:ESHttpDelete"
-                  - "es:DescribeElasticsearchDomain"
-                Resource: 
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
-              - Effect: Allow
-                Action:
-                  - "logs:CreateLogGroup"
-                  - "logs:PutLogEvents"
-                  - "logs:CreateLogStream"
-                Resource: 
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
-
-
   OpenSearchAdminRole:
     Type: AWS::IAM::Role
     Properties:
@@ -129,8 +93,6 @@ Outputs:
   OpenSearchDomainName:
     Value: !Ref OpenSearchDomain
 
-  OpenSearchFirehoseRoleArn:
-    Value: !GetAtt OpenSearchFirehoseRole.Arn
 
 
 
