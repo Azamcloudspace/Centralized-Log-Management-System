@@ -46,6 +46,10 @@ Resources:
                 Resource: 
                   - !GetAtt LogsBackupBucket.Arn
                   - !Sub "${LogsBackupBucket.Arn}/*"
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: !Ref FirehoseTransformLambda
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
