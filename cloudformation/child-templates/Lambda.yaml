@@ -88,15 +88,20 @@ Resources:
               print(f"Error: {str(e)}")
               cfnresponse.send(event, context, cfnresponse.FAILED, {})
 
-  FirehoseInvokeLambdaPermission:
+  LambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
-      ServiceToken: !GetAtt SecurityMappingFunction.Arn
+      FunctionName: !Ref FirehoseTransformLambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: firehose.amazonaws.com
+      SourceArn: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/${EnvironmentName}-Notification-Event"
 
 Outputs:
   LambdaExecutionRoleArn:
     Value: !GetAtt LambdaExecutionRole.Arn
-  SecurityMappingFunctionName:
-    Value: !Ref SecurityMappingFunction
+  FirehoseTransformLambdaFunctionName:
+    Value: !Ref FirehoseTransformLambdaFunction
+    FirehoseTransformLambdaFunctionArn:
+    Value: !GetAtt FirehoseTransformLambdaFunction.Arn
 
 
