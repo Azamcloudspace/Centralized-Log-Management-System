@@ -1,9 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  OpenSearchDomain:
-    Type: String
-  OpenSearchEndpoint:
-    Type: String
+
   LambdaLogGroup:
     Type: String
 
@@ -87,21 +84,13 @@ Resources:
             except Exception as e:
               print(f"Error: {str(e)}")
               cfnresponse.send(event, context, cfnresponse.FAILED, {})
-
-  LambdaInvokePermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !Ref FirehoseTransformLambdaFunction
-      Action: lambda:InvokeFunction
-      Principal: firehose.amazonaws.com
-      SourceArn: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/${EnvironmentName}-Notification-Event"
-
+              
 Outputs:
   LambdaExecutionRoleArn:
     Value: !GetAtt LambdaExecutionRole.Arn
   FirehoseTransformLambdaFunctionName:
     Value: !Ref FirehoseTransformLambdaFunction
-    FirehoseTransformLambdaFunctionArn:
+  FirehoseTransformLambdaFunctionArn:
     Value: !GetAtt FirehoseTransformLambdaFunction.Arn
 
 
