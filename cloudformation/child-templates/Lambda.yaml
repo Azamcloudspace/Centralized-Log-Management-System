@@ -11,7 +11,7 @@ Resources:
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: OpenSearchLambdaRole
+      RoleName: FirehoseTransformLambdaRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -19,24 +19,11 @@ Resources:
             Principal:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
-        - PolicyName: LambdaOpenSearchPolicy
+        - PolicyName: LambdaTransformCloudwatch
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Allow
-                Action:
-                  - es:ESHttpGet
-                  - es:ESHttpPost
-                  - es:ESHttpPut
-                  - es:ESHttpDelete
-                  - es:DescribeDomain
-                  - es:ESHttp*
-                Resource:
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
-                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
               - Effect: Allow
                 Action:
                   - logs:PutLogEvents
@@ -46,10 +33,10 @@ Resources:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}:*"
 
-  SecurityMappingFunction:
+  FirehoseTransformLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: opensearch-security-mapping
+      FunctionName: FirehoseTransformLambda
       Runtime: python3.11
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
@@ -58,12 +45,6 @@ Resources:
         LogFormat: JSON
         LogGroup: !Ref LambdaLogGroup
       Environment:
-        Variables:
-          OPENSEARCH_ENDPOINT: !Ref OpenSearchEndpoint
-          OPENSEARCH_USERNAME: "{{resolve:ssm-secure:/OpenSearch/Username}}"
-          OPENSEARCH_PASSWORD: "{{resolve:ssm-secure:/OpenSearch/Password}}"
-          LAMBDA_ROLE_ARN: !GetAtt LambdaExecutionRole.Arn
-          AZAM_USER_ARN: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
       Code:
         ZipFile: |
           import json
@@ -107,8 +88,8 @@ Resources:
               print(f"Error: {str(e)}")
               cfnresponse.send(event, context, cfnresponse.FAILED, {})
 
-  SecurityMappingTrigger:
-    Type: AWS::CloudFormation::CustomResource
+  FirehoseInvokeLambdaPermission:
+    Type: AWS::Lambda::Permission
     Properties:
       ServiceToken: !GetAtt SecurityMappingFunction.Arn
 
