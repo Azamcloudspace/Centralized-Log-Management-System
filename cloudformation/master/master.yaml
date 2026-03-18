@@ -33,6 +33,7 @@ Resources:
       Parameters:
         OpenSearchLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
         FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
+        FirehoseTransformLambdaArn: !GetAtt LambdaStack.Outputs.FirehoseTransformLambdaFunctionArn
 
   FirehoseStack:
     Type: AWS::CloudFormation::Stack
