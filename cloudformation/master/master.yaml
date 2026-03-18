@@ -18,6 +18,13 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/ssm.yaml
+      
+  LambdaStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/Lambda.yaml
+      Parameters:
+        LambdaLogGroup: !GetAtt CloudWatchStack.Outputs.LambdaLogGroupName
 
   OpenSearchStack:
     Type: AWS::CloudFormation::Stack
