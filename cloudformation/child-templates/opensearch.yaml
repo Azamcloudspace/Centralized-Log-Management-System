@@ -63,9 +63,9 @@ Resources:
     Type: AWS::OpenSearchService::Domain
     Properties:
       DomainName: log-domain
-      EngineVersion: OpenSearch_2.11
+      EngineVersion: OpenSearch_2.19
       ClusterConfig:
-        InstanceType: t3.small.search
+        InstanceType: t3.medium.search
         InstanceCount: 1
         
       LogPublishingOptions:
@@ -99,7 +99,7 @@ Resources:
             Principal:
               AWS: !GetAtt OpenSearchFirehoseRole.Arn
             Action:
-              - "es:*"
+              - "es:ESHttp*"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -107,17 +107,14 @@ Resources:
             Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
             Action:
-              - "es:*"
+              - "es:ESHttp*"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal: "*"
             Action:
-              - "es:ESHttpGet"
-              - "es:ESHttpPost"
-              - "es:ESHttpPut"
-              - "es:ESHttpDelete"
+              - "es:ESHttp*"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
