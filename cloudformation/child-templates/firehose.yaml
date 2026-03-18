@@ -62,7 +62,7 @@ Resources:
            LogStreamName: !Ref FirehoseLogStream
         BufferingHints:
           IntervalInSeconds: 60
-          SizeInMBs: 5
+          SizeInMBs: 1
 
 
 Outputs: 
