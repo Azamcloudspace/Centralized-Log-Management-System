@@ -86,7 +86,8 @@ Resources:
     Properties:
       FunctionName: !Ref FirehoseTransformLambdaName
       Action: lambda:InvokeFunction
-      Principal: !GetAtt FirehoseRole.Arn
+      Principal: firehose.amazonaws.com
+      SourceArn: !GetAtt FirehoseStream.Arn
 
 Outputs: 
   FirehoseDeliveryStreamName:
