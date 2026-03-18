@@ -2,12 +2,13 @@ AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
   LambdaLogGroup:
     Type: String
-
+  FirehoseArn:
+    Type: String
 Resources:
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: FirehoseTransformLambdaRole
+      RoleName: TransformLambdaRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -16,23 +17,33 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: LambdaTransformCloudwatch
+        - PolicyName: LogstoFire
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
-                  - logs:PutLogEvents
-                  - logs:CreateLogStream
-                  - logs:CreateLogGroup
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                Resource:
+                  - !Ref FirehoseArn
+                  - !Sub "${FirehoseArn}/*"
+              - Effect: Allow
+                Action:
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogStream"
+                  - "logs:CreateLogGroup"
                 Resource:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}:*"
 
-  FirehoseTransformLambdaFunction:
+
+
+      
+  TransformLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: FirehoseTransformLambda
+      FunctionName: TransformLambda
       Runtime: python3.11
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
@@ -67,6 +78,13 @@ Resources:
                   })
 
               return {'records': output}
+              
+  LogSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      LogGroupName: !Ref ApplicationLogGroup
+      FilterPattern: ""
+      DestinationArn: !Ref TransformLambdaFunction
 
 Outputs:
   LambdaExecutionRoleArn:
