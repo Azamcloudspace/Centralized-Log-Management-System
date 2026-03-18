@@ -39,10 +39,6 @@ Resources:
                 Resource: 
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
-              - Effect: Allow
-                Action:
-                  - lambda:InvokeFunction
-                Resource: !Ref FirehoseTransformLambdaArn
 
   OpenSearchAdminRole:
     Type: AWS::IAM::Role
