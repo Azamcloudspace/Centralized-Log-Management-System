@@ -60,6 +60,10 @@ Resources:
            Enabled: true
            LogGroupName: !Ref FirehoseLogGroup
            LogStreamName: !Ref FirehoseLogStream
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 5
+
 
 Outputs: 
   FirehoseDeliveryStreamName:
