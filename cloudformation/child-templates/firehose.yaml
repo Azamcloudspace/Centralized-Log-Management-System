@@ -12,7 +12,10 @@ Parameters:
   OpenSearchFirehoseRole:
     Type: String
 
-  FirehoseTransformLambda:
+  FirehoseTransformLambdaArn:
+    Type: String
+
+  FirehoseTransformLambdaName:
     Type: String
     
 Resources:
@@ -49,7 +52,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - lambda:InvokeFunction
-                Resource: !Ref FirehoseTransformLambda
+                Resource: !Ref FirehoseTransformLambdaArn
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
@@ -73,11 +76,18 @@ Resources:
             - Type: Lambda
               Parameters:
                 - ParameterName: TransformLambda
-                  ParameterValue: !Ref FirehoseTransformLambda
+                  ParameterValue: !Ref FirehoseTransformLambdaArn
         BufferingHints:
           IntervalInSeconds: 60
           SizeInMBs: 1
-
+          
+  FirehoseLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref FirehoseTransformLambdaName
+      Action: lambda:InvokeFunction
+      Principal: firehose.amazonaws.com
+      SourceArn: !GetAtt FirehoseStream.Arn
 
 Outputs: 
   FirehoseDeliveryStreamName:
