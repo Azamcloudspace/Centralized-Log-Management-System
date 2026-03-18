@@ -11,6 +11,9 @@ Parameters:
 
   OpenSearchFirehoseRole:
     Type: String
+
+  FirehoseTransformLambda
+    Type: String
     
 Resources:
   LogsBackupBucket:
@@ -60,6 +63,13 @@ Resources:
            Enabled: true
            LogGroupName: !Ref FirehoseLogGroup
            LogStreamName: !Ref FirehoseLogStream
+        ProcessingConfiguration:
+          Enabled: true
+          Processors:
+            - Type: Lambda
+              Parameters:
+                - ParameterName: TransformLambda
+                  ParameterValue: !Ref FirehoseTransformLambda
         BufferingHints:
           IntervalInSeconds: 60
           SizeInMBs: 1
