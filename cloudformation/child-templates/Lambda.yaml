@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-
   LambdaLogGroup:
     Type: String
 
@@ -38,53 +37,37 @@ Resources:
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Timeout: 30
-      LoggingConfig:
-        LogFormat: JSON
-        LogGroup: !Ref LambdaLogGroup
-      Environment:
       Code:
         ZipFile: |
           import json
-          import urllib.request
           import base64
-          import os
-          import cfnresponse
 
           def handler(event, context):
-            if event['RequestType'] == 'Delete':
-              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
-              return
-            try:
-              endpoint = os.environ['OPENSEARCH_ENDPOINT']
-              username = os.environ['OPENSEARCH_USERNAME']
-              password = os.environ['OPENSEARCH_PASSWORD']
-              lambda_role_arn = os.environ['LAMBDA_ROLE_ARN']
-              azam_user_arn = os.environ['AZAM_USER_ARN']
-              credentials = base64.b64encode(
-                f"{username}:{password}".encode()
-              ).decode()
-              payload = json.dumps({
-                "backend_roles": [lambda_role_arn],
-                "users": [azam_user_arn]
-              }).encode()
-              url = f"https://{endpoint}/_plugins/_security/api/rolesmapping/all_access"
-              req = urllib.request.Request(
-                url,
-                data=payload,
-                headers={
-                  'Content-Type': 'application/json',
-                  'Authorization': f'Basic {credentials}'
-                },
-                method='PUT'
-              )
-              with urllib.request.urlopen(req) as response:
-                result = json.loads(response.read())
-                print(f"Security mapping result: {result}")
-              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
-            except Exception as e:
-              print(f"Error: {str(e)}")
-              cfnresponse.send(event, context, cfnresponse.FAILED, {})
-              
+              output = []
+
+              for record in event['records']:
+                  raw = base64.b64decode(record['data']).decode('utf-8').strip()
+                  try:
+                      # Parse your app.log format: "timestamp - LEVEL - message"
+                      parts = raw.split(" - ", 2)
+                      log_json = {
+                          "timestamp": parts[0],
+                          "level": parts[1],
+                          "message": parts[2]
+                      }
+                  except Exception:
+                      log_json = {"message": raw}
+
+                  transformed = json.dumps(log_json) + "\n"
+
+                  output.append({
+                      'recordId': record['recordId'],
+                      'result': 'Ok',
+                      'data': base64.b64encode(transformed.encode('utf-8')).decode('utf-8')
+                  })
+
+              return {'records': output}
+
 Outputs:
   LambdaExecutionRoleArn:
     Value: !GetAtt LambdaExecutionRole.Arn
@@ -92,5 +75,4 @@ Outputs:
     Value: !Ref FirehoseTransformLambdaFunction
   FirehoseTransformLambdaFunctionArn:
     Value: !GetAtt FirehoseTransformLambdaFunction.Arn
-
 
