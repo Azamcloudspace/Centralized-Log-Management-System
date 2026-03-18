@@ -75,7 +75,7 @@ Resources:
           Processors:
             - Type: Lambda
               Parameters:
-                - ParameterName: TransformLambda
+                - ParameterName: LambdaArn
                   ParameterValue: !Ref FirehoseTransformLambdaArn
         BufferingHints:
           IntervalInSeconds: 60
