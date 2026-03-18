@@ -49,10 +49,6 @@ Resources:
                 Resource: 
                   - !GetAtt LogsBackupBucket.Arn
                   - !Sub "${LogsBackupBucket.Arn}/*"
-              - Effect: Allow
-                Action:
-                  - lambda:InvokeFunction
-                Resource: !Ref FirehoseTransformLambdaArn
 
   FirehoseStream:
     Type: AWS::KinesisFirehose::DeliveryStream
@@ -70,25 +66,10 @@ Resources:
            Enabled: true
            LogGroupName: !Ref FirehoseLogGroup
            LogStreamName: !Ref FirehoseLogStream
-        ProcessingConfiguration:
-          Enabled: true
-          Processors:
-            - Type: Lambda
-              Parameters:
-                - ParameterName: LambdaArn
-                  ParameterValue: !Ref FirehoseTransformLambdaArn
         BufferingHints:
           IntervalInSeconds: 60
           SizeInMBs: 1
           
-  FirehoseLambdaInvokePermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !Ref FirehoseTransformLambdaName
-      Action: lambda:InvokeFunction
-      Principal: firehose.amazonaws.com
-      SourceArn: !GetAtt FirehoseStream.Arn
-
 Outputs: 
   FirehoseDeliveryStreamName:
     Value: !Ref FirehoseStream
