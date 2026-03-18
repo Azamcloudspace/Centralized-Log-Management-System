@@ -3,7 +3,7 @@ Resources:
   FirehoseLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: open-search-logs
+      LogGroupName: firehose-logs
       RetentionInDays: 7
       
   FirehoseLogStream:
