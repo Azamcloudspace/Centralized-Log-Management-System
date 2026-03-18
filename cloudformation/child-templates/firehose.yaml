@@ -12,7 +12,7 @@ Parameters:
   OpenSearchFirehoseRole:
     Type: String
 
-  FirehoseTransformLambda
+  FirehoseTransformLambda:
     Type: String
     
 Resources:
