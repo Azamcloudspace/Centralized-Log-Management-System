@@ -25,7 +25,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "es:*"
+                  - "es:ESHttpPost"
+                  - "es:ESHttpPut"
                 Resource: 
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -79,7 +80,8 @@ Resources:
             Principal:
               AWS: !GetAtt OpenSearchFirehoseRole.Arn
             Action:
-              - "es:*"
+              - "es:ESHttpPost"
+              - "es:ESHttpPut"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -87,14 +89,16 @@ Resources:
             Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
             Action:
-              - "es:*"
+              - "es:ESHttpPost"
+              - "es:ESHttpPut"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal: "*"
             Action:
-              - "es:*"
+              - "es:ESHttpPost"
+              - "es:ESHttpPut"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
