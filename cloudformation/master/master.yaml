@@ -44,7 +44,7 @@ Resources:
       Parameters:
         LambdaLogGroup: !GetAtt CloudWatchStack.Outputs.LambdaLogGroupName
         FirehoseArn: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
-        ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.
+        ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
         FirehoseStreamName: !GetAtt FirehoseStack.Outputs.
 
 
