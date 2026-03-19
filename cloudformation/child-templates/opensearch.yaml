@@ -4,8 +4,7 @@ Parameters:
     Type: String
   FirehoseLogGroup:
     Type: String
-  FirehoseTransformLambdaArn:
-    Type: String
+    
 Resources:
 
   OpenSearchFirehoseRole:
