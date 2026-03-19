@@ -4,7 +4,7 @@ Parameters:
     Type: String
   FirehoseArn:
     Type: String
-  ApplicationLogGroup:
+  ApplicationLogGroupName:
     Type: String
   FirehoseStreamName:
     Type: String
@@ -101,7 +101,7 @@ Resources:
   LogSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
     Properties:
-      LogGroupName: !Ref ApplicationLogGroup
+      LogGroupName: !Ref ApplicationLogGroupName
       FilterPattern: ""
       DestinationArn: !GetAtt TransformLambdaFunction.Arn
 
