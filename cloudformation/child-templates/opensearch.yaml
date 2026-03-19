@@ -70,7 +70,7 @@ Resources:
 
       AdvancedSecurityOptions:
         Enabled: true
-        InternalUserDatabaseEnabled: false
+        InternalUserDatabaseEnabled: true
         MasterUserOptions:
           MasterUserName: "{{resolve:ssm:/OpenSearch/Username}}"
           MasterUserPassword: "{{resolve:ssm:/OpenSearch/Password}}"
