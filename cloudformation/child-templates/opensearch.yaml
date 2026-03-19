@@ -72,7 +72,8 @@ Resources:
         Enabled: true
         InternalUserDatabaseEnabled: false
         MasterUserOptions:
-          MasterUserARN: arn:aws:iam::975050225555:user/AZAM
+          MasterUserName: "{{resolve:ssm:/OpenSearch/Username}}"
+          MasterUserPassword: "{{resolve:ssm:/OpenSearch/Password}}"
 
       AccessPolicies:
         Version: '2012-10-17'
