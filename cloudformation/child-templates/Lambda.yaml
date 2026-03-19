@@ -4,6 +4,11 @@ Parameters:
     Type: String
   FirehoseArn:
     Type: String
+  ApplicationLogGroup:
+    Type: String
+  FirehoseStreamName:
+    Type: String
+
 Resources:
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -37,9 +42,6 @@ Resources:
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}:*"
 
-
-
-      
   TransformLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -47,50 +49,67 @@ Resources:
       Runtime: python3.11
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
-      Timeout: 30
+      Timeout: 30      
+      Environment:
+        Variables:
+          DELIVERY_STREAM: !Ref FirehoseStreamName
+
       Code:
         ZipFile: |
           import json
+          import gzip
           import base64
+          import boto3
+          import os
+
+          firehose = boto3.client('firehose')
 
           def handler(event, context):
-              output = []
+              DELIVERY_STREAM = os.environ['DELIVERY_STREAM']
 
-              for record in event['records']:
-                  raw = base64.b64decode(record['data']).decode('utf-8').strip()
-                  try:
-                      # Parse your app.log format: "timestamp - LEVEL - message"
-                      parts = raw.split(" - ", 2)
-                      log_json = {
-                          "timestamp": parts[0],
-                          "level": parts[1],
-                          "message": parts[2]
-                      }
-                  except Exception:
-                      log_json = {"message": raw}
+              compressed_payload = base64.b64decode(event['awslogs']['data'])
+              uncompressed_payload = gzip.decompress(compressed_payload)
+              logs_data = json.loads(uncompressed_payload)
 
-                  transformed = json.dumps(log_json) + "\n"
+              records = []
 
-                  output.append({
-                      'recordId': record['recordId'],
-                      'result': 'Ok',
-                      'data': base64.b64encode(transformed.encode('utf-8')).decode('utf-8')
+              for log_event in logs_data['logEvents']:
+                  message = log_event['message']
+
+                  records.append({
+                      'Data': json.dumps({
+                          'message': message,
+                          'timestamp': log_event['timestamp']
+                      }) + "\n"
                   })
 
-              return {'records': output}
-              
+              if records:
+                  firehose.put_record_batch(
+                      DeliveryStreamName=DELIVERY_STREAM,
+                      Records=records
+                  )
+
+              return {"status": "ok"}
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref TransformLambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: logs.amazonaws.com
+
   LogSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
     Properties:
       LogGroupName: !Ref ApplicationLogGroup
       FilterPattern: ""
-      DestinationArn: !Ref TransformLambdaFunction
+      DestinationArn: !GetAtt TransformLambdaFunction.Arn
 
 Outputs:
   LambdaExecutionRoleArn:
     Value: !GetAtt LambdaExecutionRole.Arn
-  FirehoseTransformLambdaFunctionName:
-    Value: !Ref FirehoseTransformLambdaFunction
-  FirehoseTransformLambdaFunctionArn:
-    Value: !GetAtt FirehoseTransformLambdaFunction.Arn
+  TransformLambdaFunctionName:
+    Value: !Ref TransformLambdaFunction
+  TransformLambdaFunctionArn:
+    Value: !GetAtt TransformLambdaFunction.Arn
 
