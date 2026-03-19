@@ -97,8 +97,10 @@ Resources:
       FunctionName: !Ref TransformLambdaFunction
       Action: lambda:InvokeFunction
       Principal: logs.amazonaws.com
+      SourceArn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${ApplicationLogGroupName}:*"
 
   LogSubscriptionFilter:
+    DependsOn: LambdaInvokePermission
     Type: AWS::Logs::SubscriptionFilter
     Properties:
       LogGroupName: !Ref ApplicationLogGroupName
