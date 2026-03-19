@@ -25,7 +25,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "es:Http*"
+                  - "es:ESHttp*"
                 Resource: 
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -38,27 +38,6 @@ Resources:
                 Resource: 
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}"
                   - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FirehoseLogGroup}:*"
-
-  OpenSearchAdminRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: OpenSearchAdminRole
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: OpenSearchFullAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "es:*"
-                Resource: "*"
 
   OpenSearchDomain:
     Type: AWS::OpenSearchService::Domain
