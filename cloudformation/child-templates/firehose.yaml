@@ -11,12 +11,6 @@ Parameters:
 
   OpenSearchFirehoseRole:
     Type: String
-
-  FirehoseTransformLambdaArn:
-    Type: String
-
-  FirehoseTransformLambdaName:
-    Type: String
     
 Resources:
   LogsBackupBucket:
