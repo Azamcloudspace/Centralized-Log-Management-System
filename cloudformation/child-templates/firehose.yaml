@@ -36,6 +36,12 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - "es:ESHttp*"
+                Resource: 
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}"
+                  - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${OpenSearchDomain}/*"
+              - Effect: Allow
+                Action:
                   - "s3:ListBucket"
                   - "s3:GetBucketLocation"
                   - "s3:PutObject"
