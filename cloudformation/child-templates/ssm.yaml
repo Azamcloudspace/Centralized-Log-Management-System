@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+
+  OpenSearchUsernameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /OpenSearch/Username
+      Type: String
+      Value: admin
+
+  OpenSearchPasswordParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /OpenSearch/Password
+      Type: String
+      Value: Admin123$
+
