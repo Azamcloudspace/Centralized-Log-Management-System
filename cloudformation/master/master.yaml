@@ -20,6 +20,8 @@ Resources:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/ssm.yaml
 
   OpenSearchStack:
+    DependsOn:
+      - SsmStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/opensearch.yaml
