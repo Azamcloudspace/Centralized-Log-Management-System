@@ -47,13 +47,15 @@ Resources:
         FirehoseTransformLambdaName: !GetAtt LambdaStack.Outputs.FirehoseTransformLambdaFunctionName
         FirehoseTransformLambdaArn: !GetAtt LambdaStack.Outputs.FirehoseTransformLambdaFunctionArn
 
-  CwTOFireStack:
+  LambdaStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/cwtofire.yaml
+      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/Lambda.yaml
       Parameters:
-        FirehoseDeliveryStream: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
-        ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.ApplicationLogGroupName
+        LambdaLogGroup: !GetAtt CloudWatchStack.Outputs.LambdaLogGroupName
+        FirehoseArn: !GetAtt FirehoseStack.Outputs.FirehoseArn
+        ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.
+        FirehoseStreamName: !GetAtt FirehoseStack.Outputs.
 
 
 
