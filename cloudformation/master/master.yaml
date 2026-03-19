@@ -43,7 +43,7 @@ Resources:
       TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/Lambda.yaml
       Parameters:
         LambdaLogGroup: !GetAtt CloudWatchStack.Outputs.LambdaLogGroupName
-        FirehoseArn: !GetAtt FirehoseStack.Outputs.FirehoseArn
+        FirehoseArn: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
         ApplicationLogGroup: !GetAtt CloudWatchStack.Outputs.
         FirehoseStreamName: !GetAtt FirehoseStack.Outputs.
 
