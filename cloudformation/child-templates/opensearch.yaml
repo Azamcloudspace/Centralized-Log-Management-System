@@ -90,7 +90,7 @@ Resources:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/AZAM"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/azamcloudspace"
             Action:
               - "es:ESHttpPost"
               - "es:ESHttpPut"
@@ -109,7 +109,7 @@ Resources:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
             Condition:
               IpAddress: 
-                aws:SourceIp: "41.76.192.17/32"
+                aws:SourceIp: "102.88.112.126/32"
 Outputs:
   OpenSearchDomainEndpoint:
     Value: !GetAtt OpenSearchDomain.DomainEndpoint
