@@ -7,24 +7,24 @@ Resources:
       - CloudWatchStack
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/ec2.yaml
+      TemplateURL: https://iac-bucket-azamclouds.s3.eu-central-1.amazonaws.com/ec2.yaml
       
   CloudWatchStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/cloudwatch.yaml
+      TemplateURL: https://iac-bucket-azamclouds.s3.eu-central-1.amazonaws.com/cloudwatch.yaml
 
   SsmStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/ssm.yaml
+      TemplateURL: https://iac-bucket-azamclouds.s3.eu-central-1.amazonaws.com/ssm.yaml
 
   OpenSearchStack:
     DependsOn:
       - SsmStack
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/opensearch.yaml
+      TemplateURL: https://iac-bucket-azamclouds.s3.eu-central-1.amazonaws.com/opensearch.yaml
       Parameters:
         OpenSearchLogGroup: !GetAtt CloudWatchStack.Outputs.OpenSearchLogGroupArn
         FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
@@ -32,7 +32,7 @@ Resources:
   FirehoseStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/firehose.yaml
+      TemplateURL: https://iac-bucket-azamclouds.s3.eu-central-1.amazonaws.com/firehose.yaml
       Parameters:
         OpenSearchDomain: !GetAtt OpenSearchStack.Outputs.OpenSearchDomainName
         FirehoseLogGroup: !GetAtt CloudWatchStack.Outputs.FirehoseLogGroupName
@@ -42,7 +42,7 @@ Resources:
   LambdaStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://iac-bucket-azamcloud.s3.us-east-1.amazonaws.com/Lambda.yaml
+      TemplateURL: https://iac-bucket-azamclouds.s3.eu-central-1.amazonaws.com/Lambda.yaml
       Parameters:
         LambdaLogGroup: !GetAtt CloudWatchStack.Outputs.LambdaLogGroupName
         FirehoseArn: !GetAtt FirehoseStack.Outputs.FirehoseDeliveryStreamArn
