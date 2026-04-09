@@ -69,8 +69,8 @@ Resources:
         EnforceHTTPS: true
 
       AdvancedSecurityOptions:
-        Enabled: false
-        InternalUserDatabaseEnabled: false
+        Enabled: true
+        InternalUserDatabaseEnabled: true
         MasterUserOptions:
           MasterUserName: "{{resolve:ssm:/OpenSearch/Username}}"
           MasterUserPassword: "{{resolve:ssm:/OpenSearch/Password}}"
