@@ -25,9 +25,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "es:ESHttpPost"
-                  - "es:ESHttpPut"
-                  - "es:ESHttpGet"
+                  - "es:*"
                 Resource: 
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
                   - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -82,9 +80,7 @@ Resources:
             Principal:
               AWS: !GetAtt OpenSearchFirehoseRole.Arn
             Action:
-              - "es:ESHttpPost"
-              - "es:ESHttpPut"
-              - "es:ESHttpGet"
+              - "es:*"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
@@ -92,18 +88,14 @@ Resources:
             Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/azamcloudspace"
             Action:
-              - "es:ESHttpPost"
-              - "es:ESHttpPut"
-              - "es:ESHttpGet"
+              - "es:*"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
           - Effect: Allow
             Principal: "*"
             Action:
-              - "es:ESHttpPost"
-              - "es:ESHttpPut"
-              - "es:ESHttpGet"
+              - "es:*"
             Resource: 
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain"
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
