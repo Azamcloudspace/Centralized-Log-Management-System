@@ -109,7 +109,7 @@ Resources:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/log-domain/*"
             Condition:
               IpAddress: 
-                aws:SourceIp: "102.88.112.126/32"
+                aws:SourceIp: "102.88.111.35/32"
 Outputs:
   OpenSearchDomainEndpoint:
     Value: !GetAtt OpenSearchDomain.DomainEndpoint
