@@ -38,9 +38,7 @@ Resources:
                   - "logs:PutLogEvents"
                   - "logs:CreateLogStream"
                   - "logs:CreateLogGroup"
-                Resource:
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}"
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LambdaLogGroup}:*"
+                Resource: "*"
 
   TransformLambdaFunction:
     Type: AWS::Lambda::Function
