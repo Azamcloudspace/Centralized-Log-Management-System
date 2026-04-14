@@ -12,12 +12,6 @@ Resources:
       LogGroupName: !Ref FirehoseLogGroup
       LogStreamName: FirehoseStreamLogs
       
-  LambdaLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: openserach-lambda-logs
-      RetentionInDays: 7
-
   OpenSearchLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
