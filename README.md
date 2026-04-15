@@ -134,13 +134,13 @@ Screenshot of S3 backup logs
 
 ##  Repository Structure
 
-
+```
 .
 ├── ci/
 ├── cloudformation/
 │ ├── child-templates/
 │ └── master/
-
+```
 ---
 
 ##  Automation
