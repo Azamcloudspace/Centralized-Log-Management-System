@@ -1,4 +1,4 @@
-# Centralized-Log-Management-System
+#  Centralized Log Management System (Real-Time Processing Pipeline)
 
 ##  Project Summary
 
@@ -38,14 +38,10 @@ EC2 → CloudWatch Logs → Lambda → Firehose → OpenSearch + S3
   - Runs application generating logs (`/var/log/app.log`)  
   - Acts as the primary log source  
 
----
-
 ### Log Collection
 - **CloudWatch Agent**
   - Installed on EC2 instance  
   - Streams log data to CloudWatch Logs (`application-logs`)  
-
----
 
 ### Log Processing
 - **AWS Lambda**
@@ -53,14 +49,10 @@ EC2 → CloudWatch Logs → Lambda → Firehose → OpenSearch + S3
   - Decodes and transforms raw log data  
   - Converts logs into structured JSON format  
 
----
-
 ### Log Streaming
 - **Amazon Kinesis Data Firehose**
   - Buffers and delivers processed logs  
   - Ensures reliable delivery to destinations  
-
----
 
 ### Log Storage & Analysis
 - **Amazon OpenSearch Service**
@@ -68,8 +60,6 @@ EC2 → CloudWatch Logs → Lambda → Firehose → OpenSearch + S3
 
 - **Amazon S3**
   - Stores raw logs for backup and long-term retention  
-
----
 
 ### Security & Configuration
 - **AWS IAM**
@@ -80,9 +70,55 @@ EC2 → CloudWatch Logs → Lambda → Firehose → OpenSearch + S3
 
 ---
 
-##  Deployment Architecture
+## Infrastructure as Code (IaC) – AWS CloudFormation
 
-The system is deployed using CloudFormation with nested stacks:
+This project uses **AWS CloudFormation** with a **nested stack setup**. One main stack (master) controls multiple smaller stacks, each handling a specific service.
+
+### Stack Structure
+
+Deployment Order (Dependency-Based)
+
+```
+    CloudWatchStack        SsmStack
+          ↓                  ↓
+        EC2Stack        OpenSearchStack
+                              ↓
+                          FirehoseStack
+                              ↓
+                          LambdaStack
+
+
+**Key**
+
+- Arrows (↓) → dependency order  
+- Stacks on the same level → deployed in parallel  
+
+```
+
+### How the Stacks Connect
+
+Stacks are separated for organization
+They share data using:
+
+- **Parameters** – Pass values into a stack  
+- **Outputs** – Share values from a stack  
+
+### Design Idea
+
+Stacks are modular but not fully independent.  
+Some stacks require values (like ARNs, or service names) from other stacks to function as designed.
+
+This is handled using **output → parameter passing**, keeping things structured and connected.
+
+### Result
+
+- Clean structure  
+- Easy to update  
+- Reusable across different environments  
+
+---
+
+##  Deployment Architecture
 
 **Deployment Flow:**
 
@@ -90,11 +126,23 @@ The system is deployed using CloudFormation with nested stacks:
 CodeBuild → CloudFormation → Nested Stacks → Full System Provisioned
 ```
 
+**CodeBuild**
+
+Environment is provisioned via codebuild using `buildspec-cloudformation.yml`, Its capabilities:
+
+- Uploads all nested CloudFormation templates to an S3 bucket for stack referencing
+- Deploys the master CloudFormation stack template
+- Implements properly structured IAM permissions across services
+
+**Cloudformation**
+
+- Provisions master stack's child stacks template resources 
+
 ![DEPLOYMENT](/screenshots/Screenshot1.png)
 Screenshot of Codebuild execution
 
 ![DEPLOYMENT](/screenshots/Screenshot2.png)
-Screenshout of deployed cloudformation stack showing full system provisioned
+Screenshot of deployed cloudformation stack showing full system provisioned
 
 ---
 
@@ -134,13 +182,13 @@ Screenshot of S3 backup logs
 
 ##  Repository Structure
 
-```
+
 .
 ├── ci/
 ├── cloudformation/
 │ ├── child-templates/
 │ └── master/
-```
+
 ---
 
 ##  Automation
